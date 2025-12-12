@@ -13,8 +13,10 @@ app.use(express.json());
 // ------------------ CORS CONFIG ------------------
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://secret-santa-local.vercel.app"
+  "https://secret-santa-local.vercel.app",
+  "https://secretsantaapp-st.vercel.app" 
 ];
+
 
 app.use(
   cors({
