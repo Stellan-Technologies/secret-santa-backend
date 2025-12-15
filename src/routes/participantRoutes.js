@@ -8,7 +8,7 @@ router.post("/register", controller.register);
 router.get("/verify", controller.verify);
 
 // RESEND verification email
-router.post("/resend", controller.resendVerification);
+router.post("/resend-verification", controller.resendVerification);
 
 // Get all verified participants for a room
 router.get("/verified/all", controller.getAllVerified);
