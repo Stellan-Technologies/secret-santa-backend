@@ -1,25 +1,18 @@
 exports.drawAssignments = (participants) => {
-  const givers = [...participants];
-  const receivers = [...participants];
-
-  // Shuffle receivers until no one is matched to themselves
-  receivers.sort(() => Math.random() - 0.5);
-
-  let safe = false;
-  while (!safe) {
-    safe = true;
-
-    for (let i = 0; i < givers.length; i++) {
-      if (givers[i]._id.toString() === receivers[i]._id.toString()) {
-        receivers.sort(() => Math.random() - 0.5);
-        safe = false;
-        break;
-      }
-    }
+  if (participants.length < 3) {
+    throw new Error("At least 3 participants required");
   }
 
-  return givers.map((giver, i) => ({
+  const shuffled = [...participants];
+
+  // Fisher–Yates shuffle (real randomness)
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled.map((giver, index) => ({
     giver,
-    receiver: receivers[i]
+    receiver: shuffled[(index + 1) % shuffled.length],
   }));
 };

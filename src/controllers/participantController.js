@@ -90,7 +90,58 @@ exports.verify = async (req, res) => {
   }
 };
 
+// ---------------------- RESEND VERIFICATION EMAIL ----------------------
+exports.resendVerification = async (req, res) => {
+  try {
+    const { email, roomCode } = req.body;
 
+    if (!email || !roomCode) {
+      return res.status(400).json({ message: "Email and room code required" });
+    }
+
+    const room = await Room.findOne({ roomCode });
+    if (!room) {
+      return res.status(400).json({ message: "Invalid room code" });
+    }
+
+    const user = await Participant.findOne({
+      email,
+      roomId: room._id
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "Participant not found" });
+    }
+
+    if (user.verified) {
+      return res.status(400).json({ message: "Email already verified" });
+    }
+
+    // 🔥 Remove old tokens
+    await VerificationToken.deleteMany({ participantId: user._id });
+
+    // 🔑 Generate new token
+    const token = generateToken();
+
+    await VerificationToken.create({
+      participantId: user._id,
+      token
+    });
+
+    await mailService.sendVerificationEmail(
+      user.email,
+      token,
+      user._id,
+      roomCode
+    );
+
+    res.json({ message: "Verification email resent successfully" });
+
+  } catch (err) {
+    console.error("Resend Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 // ---------------------- GET VERIFIED PARTICIPANTS ----------------------
 exports.getAllVerified = async (req, res) => {
