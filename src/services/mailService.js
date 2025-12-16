@@ -54,3 +54,37 @@ exports.sendAssignmentEmail = async (email, receiver) => {
     },
   });
 };
+
+// ------------------ SEND DELETE EMAIL ------------------
+exports.sendDeleteConfirmationEmail = async (email, token, userId, roomCode) => {
+  const deleteUrl = `${process.env.FRONTEND_URL}/delete?token=${token}&id=${userId}&room=${roomCode}`;
+
+  const data = {
+    sender: { email: process.env.MAIL_FROM },
+    to: [{ email }],
+    subject: "Confirm Removal from Secret Santa ❌",
+    htmlContent: `
+      <h2>Confirm Deletion</h2>
+      <p>Click below to remove yourself from the Secret Santa room.</p>
+
+      <a href="${deleteUrl}"
+         style="padding:12px 18px;background:#B00020;color:white;text-decoration:none;
+                font-size:16px;border-radius:6px;">
+        Confirm Delete
+      </a>
+
+      <p>If you didn't request this, ignore the email.</p>
+    `,
+    trackClicks: false,
+    trackOpens: false
+  };
+
+  await axios.post("https://api.brevo.com/v3/smtp/email", data, {
+    headers: {
+      "api-key": process.env.BREVO_API_KEY,
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+

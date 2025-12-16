@@ -13,4 +13,10 @@ router.post("/resend-verification", controller.resendVerification);
 // Get all verified participants for a room
 router.get("/verified/all", controller.getAllVerified);
 
+router.post("/resend-delete", controller.resendDeleteEmail);
+router.get("/confirm-delete", controller.confirmDelete);
+
+
+
+
 module.exports = router;
